@@ -1,7 +1,7 @@
 class BTreeNode:
     def __init__(self, leaf=True):
         self.leaf = leaf
-        self.keys = []      # [{"key": ..., "value": ...}]
+        self.keys = []      
         self.children = []  # list[BTreeNode]
 
 
@@ -100,7 +100,6 @@ class BTree:
         return self._split_overflow_node(node)
 
     def _split_overflow_node(self, node):
-        # node overflow: có đúng 3 key
         mid = 1
 
         middle_entry = node.keys[mid]
