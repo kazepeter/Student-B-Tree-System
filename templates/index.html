@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Tree Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Student Management</p>
+                <h1>Student B-Tree System</h1>
+                <p class="hero-subtitle">B-Tree based student management.</p>
+            </div>
+
+            <div class="hero-meta">
+                <div id="action-status" class="action-status idle">Ready</div>
+                <div class="mode-switch">
+                    <button id="view-id-btn" class="mode-btn active">Index by ID</button>
+                    <button id="view-name-btn" class="mode-btn">Index by Name</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="control-panel">
+                <section class="panel-block">
+                    <div class="panel-head">
+                        <h2>Add Student</h2>
+                        <span class="panel-tag">Insert</span>
+                    </div>
+
+                    <label class="field-group">
+                        <span>Student ID</span>
+                        <input type="text" id="student-id" placeholder="24520011">
+                    </label>
+
+                    <label class="field-group">
+                        <span>Full name</span>
+                        <input type="text" id="full-name" placeholder="Nguyen Van M">
+                    </label>
+
+                    <div class="two-col">
+                        <label class="field-group">
+                            <span>Gender</span>
+                            <select id="gender">
+                                <option value="Nam">Male</option>
+                                <option value="Nu">Female</option>
+                            </select>
+                        </label>
+
+                        <label class="field-group">
+                            <span>Class</span>
+                            <input type="text" id="class-name" placeholder="CNTT06">
+                        </label>
+                    </div>
+
+                    <button id="add-student-btn" class="primary-btn">Add Student</button>
+                </section>
+
+                <section class="panel-block">
+                    <div class="panel-head">
+                        <h2>Delete Student</h2>
+                        <span class="panel-tag danger">Delete</span>
+                    </div>
+
+                    <label class="field-group">
+                        <span>Student ID</span>
+                        <input type="text" id="delete-id" placeholder="24520005">
+                    </label>
+
+                    <button id="delete-student-btn" class="danger-btn">Delete Student</button>
+                </section>
+
+                <section class="panel-block">
+                    <div class="panel-head">
+                        <h2>Search</h2>
+                        <span class="panel-tag">Lookup</span>
+                    </div>
+
+                    <label class="field-group">
+                        <span>Search by ID</span>
+                        <input type="text" id="search-id" placeholder="24520003">
+                    </label>
+                    <button id="search-student-btn" class="secondary-btn">Search ID</button>
+
+                    <div class="divider"></div>
+
+                    <label class="field-group">
+                        <span>Search by Name</span>
+                        <input type="text" id="search-name" placeholder="Nguyen Van A">
+                    </label>
+                    <button id="search-name-btn" class="secondary-btn accent-btn">Search Name</button>
+
+                    <div class="divider"></div>
+
+                    <button id="refresh-btn" class="ghost-btn">Refresh</button>
+                    <button id="clear-highlight-btn" class="ghost-btn">Clear Highlight</button>
+                </section>
+            </aside>
+
+            <section class="main-stage">
+                <section class="visual-card">
+                    <div class="visual-header">
+                        <div>
+                            <p class="mini-label">B-Tree View</p>
+                            <h2 id="visual-title">ID Index</h2>
+                            <p id="visual-subtitle"></p>
+                        </div>
+                        <div class="legend">
+                            <span><i class="legend-dot node-dot"></i>Node</span>
+                            <span><i class="legend-dot key-dot"></i>Key</span>
+                            <span><i class="legend-dot highlight-dot"></i>Highlight</span>
+                        </div>
+                    </div>
+
+                    <div id="btree-stage" class="btree-stage"></div>
+                </section>
+
+                <section class="bottom-grid">
+                    <div class="info-card">
+                        <div class="panel-head compact">
+                            <h3>Operation Feed</h3>
+                            <span id="operation-badge" class="panel-tag neutral">Ready</span>
+                        </div>
+                        <div id="log-box" class="log-feed">
+                            <p>[System] Interface initialized.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="panel-head compact">
+                            <h3>Search Result</h3>
+                            <span class="panel-tag">Result</span>
+                        </div>
+                        <div id="search-result-box" class="result-box">
+                            <p>No search result yet.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="table-card">
+                    <div class="table-head">
+                        <div>
+                            <p class="mini-label">Base Table</p>
+                            <h3>Student</h3>
+                        </div>
+                        <span id="row-count-badge" class="row-badge">0 rows</span>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Full Name</th>
+                                    <th>Gender</th>
+                                    <th>Class</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal-card" role="alertdialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-head">
+                <h3 id="modal-title">Notification</h3>
+                <button id="modal-close-btn" class="modal-close-btn" type="button" aria-label="Close">×</button>
+            </div>
+            <p id="modal-message" class="modal-message">Message</p>
+            <button id="modal-ok-btn" class="primary-btn modal-ok-btn" type="button">OK</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
